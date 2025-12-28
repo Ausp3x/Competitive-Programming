@@ -1,0 +1,79 @@
+// 人外有人，天外有天
+// author: Ausp3x
+// g++ -Wall -Wextra -o <name> <name>.cpp
+// <name>.exe < in > out
+
+#pragma GCC optimize("O3, fast-math")
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+
+#define fi first
+#define se second
+#define pb push_back
+// #define DEBUG
+using lng = long long;
+using lll = __int128;
+template<typename T> 
+using indexed_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template<typename T> // lower_bound and upper_bound are broken
+using indexed_multiset = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
+
+int const INF32 = 0x3f3f3f3f;
+lng const INF64 = 0x3f3f3f3f3f3f3f3f;
+
+void solve() {
+    int n, k;
+    cin >> n >> k;
+    vector<int> A(n), cnts(n + 1);
+    for (int &a : A) {
+        cin >> a;
+
+        cnts[a]++;
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (cnts[i] % k != 0) {
+            cout << 0 << endl;
+            return;
+        }
+    
+        cnts[i] /= k;
+    }
+
+    // for (int i = 1; i <= n; i++) 
+    //     cout << cnts[i] << ' ';
+    // cout << endl;
+
+    int j = -1;
+    lng ans = 0;
+    vector<int> cur_cnts(n + 1);
+    for (int i = 0; i < n; i++) {
+        while (j + 1 < n && cur_cnts[A[j + 1]] + 1 <= cnts[A[j + 1]]) {
+            j++;
+            cur_cnts[A[j]]++;
+        }
+
+        ans += j - i + 1;
+
+        cur_cnts[A[i]]--;
+    }
+
+    cout << ans << endl;
+
+    return;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int t = 1;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+
+    return 0;
+}

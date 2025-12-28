@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "C:\\MinGW\\include"
             ],
             "defines": [
                 "_DEBUG",
@@ -11,7 +11,7 @@
                 "_UNICODE"
             ],
             "intelliSenseMode": "${default}",
-            "compilerPath": "C:/ProgramData/chocolatey/bin/g++.exe",
+            "compilerPath": "C:\\MinGW\\bin\\g++.exe",
             "cppStandard": "c++20",
             "cStandard": "c17"
         }

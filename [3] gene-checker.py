@@ -6,8 +6,6 @@ class Color():
     g = '\033[32m'
     reset = '\033[0m'
 
-
-
 N = 1000
 optim_name = 'optim'
 brute_name = 'brute'
