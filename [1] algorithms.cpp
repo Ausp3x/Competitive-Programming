@@ -371,14 +371,6 @@ struct EdmondsKarp {
 
 
 
-struct Eratosthenes {
-    vector<bool> is_prime;
-    vector<int> primes;
-
-};
-
-
-
 // TESTED
 struct EulerTourTree {
     int n, root;
@@ -466,14 +458,14 @@ struct FenTree {
         assert(x > 0 && y > 0 && z > 0);
     }
 
-    template <typename T>
+    template<typename T>
     FenTree(int x, const vector<T> &arr): FenTree(x) {
         for (int i = 0; i < x; i++) {
             rangeAddUpdate(i + 1, i + 1, arr[i]);
         }
     }
 
-    template <typename T>
+    template<typename T>
     FenTree(int x, int y, const vector<vector<T>> &arr): FenTree(x, y) {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -482,7 +474,7 @@ struct FenTree {
         }
     }
 
-    template <typename T>
+    template<typename T>
     FenTree(int x, int y, int z, const vector<vector<vector<T>>> &arr): FenTree(x, y, z) {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {

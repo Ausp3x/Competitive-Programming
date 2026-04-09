@@ -95,5 +95,6 @@
     },
     "editor.fontFamily": "'Jetbrains Mono'",
     "C_Cpp.default.compilerPath": "",
-    "cph.general.timeOut": 10000
+    "cph.general.timeOut": 10000,
+    "C_Cpp.errorSquiggles": "enabled"
 }
