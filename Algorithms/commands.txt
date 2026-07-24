@@ -1,0 +1,3 @@
+g++ -std=gnu++20 -O2 -Wall -Wextra -pedantic "Z-Tests Local\1-Core_01-template_tester.cpp"
+g++ -std=gnu++20 -O2 -Wall -Wextra -pedantic "Z-Tests Local\1-Core_02-debug_tester.cpp"
+g++ -std=gnu++20 -O2 -Wall -Wextra -pedantic "Z-Tests Local\1-Core_02-debug_no-local_tester.cpp"

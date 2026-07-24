@@ -1,111 +1,216 @@
-// 人外有人，天外有天
+// 知彼知己，百战不殆
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
 using namespace __gnu_pbds;
 
-#define fi first
-#define se second
-#define pb push_back
-using lng = long long;
-using lll = __int128;
+#define fi    first
+#define se    second
+#define pb    push_back
+using uint = uint32_t;
+using lng = int64_t;    using ulng = uint64_t;
+using lll = __int128_t; using ulll = __uint128_t;
 template<typename T> 
-using indexed_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+using indexed_set = tree<T, null_type, std::less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
-int const INF32 = 0x3f3f3f3f;
-lng const INF64 = 0x3f3f3f3f3f3f3f3f;
+constexpr int INF32 = 0x3f3f3f3f;
+constexpr lng INF64 = 0x3f3f3f3f3f3f3f3f;
 
-// T: O(n^(1/2)), M: O(log(n))
-vector<lng> getPrimeFacSlow(lng n) {
-    vector<lng> res;
-    for (int p : {2, 3, 5}) {
-        while (n % p == 0) {
-            res.pb(p);
-            n /= p;
-        }
-    }
+template<typename T> 
+constexpr inline bool chmax(T &a, const T &b) { return a < b ? a = b, 1 : 0; }
+template<typename T> 
+constexpr inline bool chmin(T &a, const T &b) { return a > b ? a = b, 1 : 0; }
 
-    int j = 0;
-    static const vector<int> inc = {4, 2, 4, 2, 4, 6, 2, 6};
-    for (lng i = 7; i * i <= n; i += inc[j], j = (j + 1) & 7) {
-        while (n % i == 0) {
-            res.pb(i);
-            n /= i;
-        }
-    }
-    if (n > 1) {
-        res.pb(n);}
+#ifdef LOCAL
+namespace Debug {
+    using std::to_string;
 
-    sort(res.begin(), res.end());
+    inline string to_string(bool x) { return x ? "true" : "false"; }
+    inline string to_string(char x) { return string({'\'', x, '\''}); }
+    inline string to_string(lll x) {
+        if (x == 0) { return "0"; }
+        string s; bool is_neg = x < 0; 
+        ulll ux = is_neg ? -ulll(x) : ulll(x);
+        while (ux > 0) { s += char('0' + ux % 10); ux /= 10; }
+        if (is_neg) { s += '-'; }
+        std::reverse(s.begin(), s.end());
+        return s;}
+    inline string to_string(ulll x) {
+        if (x == 0) { return "0"; }
+        string s;
+        while (x > 0) { s += char('0' + x % 10); x /= 10; }
+        std::reverse(s.begin(), s.end());
+        return s;}
+    inline string to_string(std::string_view x) {
+        string res; res.reserve(x.size() + 2);
+        res += '"'; res += x; res += '"';
+        return res;}
+    inline string to_string(const char *x) { return x ? to_string(std::string_view(x)) : ""; }
+    inline string to_string(char *x) { return to_string(static_cast<const char*>(x)); }
+    inline string to_string(const string &x) { return to_string(std::string_view(x)); }
+    template<size_t N> 
+    inline string to_string(const bitset<N> &x) { return x.to_string(); }
     
-    return res;
+    template<typename T>
+    requires std::is_aggregate_v<T> && (!std::ranges::range<T>) 
+          && (!requires (ostream &os, const T &x) { os << x; })
+    inline string to_string(const T &x);
+    
+    template<typename T>
+    requires requires { std::tuple_size<T>::value; } && (!std::ranges::range<T>)
+    inline string to_string(const T &x);
+    template<std::ranges::range T> 
+    requires (!std::is_convertible_v<T, std::string_view>)
+    inline string to_string(const T &x);
+    template<typename T, typename C>
+    inline string to_string(const queue<T, C> &x);
+    template<typename T, typename C>
+    inline string to_string(const stack<T, C> &x);
+    template<typename T, typename C, typename Comp>
+    inline string to_string(const priority_queue<T, C, Comp> &x);
+    
+    template<typename T>
+    requires (!std::ranges::range<T>) && requires (ostream &os, const T &x) { os << x; }
+    inline string to_string(const T &x) { std::stringstream ss; ss << x; return ss.str(); }
+    
+    // optional
+    struct Any { template<typename T> operator T() const; };
+    template<typename T, size_t N>
+    constexpr bool aggSizGeq = []<size_t ...I>(std::index_sequence<I...>) {
+        return requires { T{(void(I), Any{})...}; };}(std::make_index_sequence<N>{});
+    template<typename T, size_t N>
+    constexpr bool aggSizExact = aggSizGeq<T, N> && !aggSizGeq<T, N + 1>;
+    template<typename T>
+    requires std::is_aggregate_v<T> && (!std::ranges::range<T>) 
+          && (!requires (ostream &os, const T &x) { os << x; })
+    inline string to_string(const T &x) {
+        if constexpr (aggSizExact<T, 8>) {
+            auto &[a, b, c, d, e, f, g, h] = x; return to_string(std::tie(a, b, c, d, e, f, g, h));} 
+        else if constexpr (aggSizExact<T, 7>) {
+            auto &[a, b, c, d, e, f, g] = x; return to_string(std::tie(a, b, c, d, e, f, g));} 
+        else if constexpr (aggSizExact<T, 6>) {
+            auto &[a, b, c, d, e, f] = x; return to_string(std::tie(a, b, c, d, e, f));} 
+        else if constexpr (aggSizExact<T, 5>) {
+            auto &[a, b, c, d, e] = x; return to_string(std::tie(a, b, c, d, e));} 
+        else if constexpr (aggSizExact<T, 4>) {
+            auto &[a, b, c, d] = x; return to_string(std::tie(a, b, c, d));} 
+        else if constexpr (aggSizExact<T, 3>) {
+            auto &[a, b, c] = x; return to_string(std::tie(a, b, c));} 
+        else if constexpr (aggSizExact<T, 2>) {
+            auto &[a, b] = x; return to_string(std::tie(a, b));} 
+        else if constexpr (aggSizExact<T, 1>) {
+            auto &[a] = x; return to_string(std::tie(a));} 
+        else { return "{}"; }}
+    
+    template<typename T>
+    requires requires { std::tuple_size<T>::value; } && (!std::ranges::range<T>)
+    inline string to_string(const T &x) {
+        string res = "(";
+        std::apply([&](const auto &...args) { 
+            int i = 0; ((res += (i++ ? ", " : ""), res += to_string(args)), ...);}, x);
+        return res + ")";}
+    template<std::ranges::range T> 
+    requires (!std::is_convertible_v<T, std::string_view>)
+    inline string to_string(const T &x) {
+        int i = 0; string res = "{";
+        for (auto &&y : x) {
+            if (i++ > 0) { res += ", "; } 
+            res += to_string(y);}
+        res += "}";
+        return res;}
+    template<typename T, typename C>
+    inline string to_string(const queue<T, C> &x) {
+        struct Accessor : queue<T, C> { 
+            static const C &get(const queue<T, C> &q) { return q.*&Accessor::c; }};
+        return to_string(Accessor::get(x));}
+    template<typename T, typename C>
+    inline string to_string(const stack<T, C> &x) {
+        struct Accessor : stack<T, C> { 
+            static const C &get(const stack<T, C> &q) { return q.*&Accessor::c; }};
+        return to_string(Accessor::get(x));}
+    template<typename T, typename C, typename Comp>
+    inline string to_string(const priority_queue<T, C, Comp> &x) {
+        struct Accessor : priority_queue<T, C, Comp> { 
+            static const C &get(const priority_queue<T, C, Comp> &q) { return q.*&Accessor::c; }};
+        return to_string(Accessor::get(x));}
+
+    inline int dep = 0;
+    inline std::string_view indent() {
+        static constexpr auto spaces = []() { array<char, 128> v{}; v.fill(' '); return v; }();
+        return std::string_view(spaces.data(), min<int>(2 * dep, spaces.size()));}
+    template<std::ranges::range R, typename ...Args>
+    auto slice(R &&ran, int l, int r, Args ...args) {
+        auto v = std::forward<R>(ran) | std::views::drop(l) | std::views::take(r - l + 1);
+        if constexpr (sizeof...(args) == 0) { return v; } 
+        else { return v | std::views::transform([=](auto &&cur) { return slice(cur, args...); }); }}
+
+    template<typename ...Args>
+    void debugO(const Args &...args) { ((cerr << ' ' << to_string(args)), ...); cerr << '\n'; }
+    struct Tracer {
+        string v; 
+        Tracer(string x) : v(std::move(x)) { cerr << indent() << ">> " << v << '\n'; dep++; }
+        ~Tracer() { dep--; cerr << indent() << "<< " << v << '\n'; }};
 }
 
-void solve() {
-    int n;
-    cin >> n;
-    vector<int> A(n);
-    for (int &a : A)
-        cin >> a;
+#define debug(...) cerr << Debug::indent() << "[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]", Debug::debugO(__VA_ARGS__)
+// #define debug(...) cerr << Debug::indent() << "\033[1;31m[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]:\033[0m", Debug::debugO(__VA_ARGS__)
+#define TRACE_CNCAT(a, b) a##b
+#define TRACE_GUARD(a, b) TRACE_CNCAT(a, b)
+#define trace(x) Debug::Tracer TRACE_GUARD(_traceGuard, __LINE__)(x)
+#else
+#define debug(...) void(0)
+#define trace(x) void(0)
+#endif
 
-    map<int, int> M;
-    for (int a : A) {
-        auto pf = getPrimeFacSlow(a);
+const long double pi = acos(-1.0L);
 
-        map<int, int> C;
-        for (int p : pf)
-            C[p]++;
+// T: O(log(n)), M: O(1)
+template<typename F>
+lng ternSearch(lng l, lng r, F f) { // default min, negate f for max
+    while (r - l > 2) {
+        lng m1 = l + (r - l) / 3;
+        lng m2 = r - (r - l) / 3;
+        if (f(m1) > f(m2)) { l = m1; }
+        else { r = m2; }}
+    auto mn = f(l); lng res = l;
+    for (lng i = l; i < r;) {
+        i++; auto cur = f(i);
+        if (cur < mn) { mn = cur; res = i; }}
+    return res;}
 
-        for (auto &[p, c] : C)
-            M[p] |= 1 << c;
+void solve(int t) {
+    // trace(to_string(t));
+
+    lng m, T;
+    cin >> m >> T;
+    
+    if (T < 3 * m) {
+        cout << 0 << endl;
+        return;
     }
 
-    map<int, int> SG;
-    
-    auto calc = [&](int cur, auto &&calc) -> void {
-        if (SG.find(cur) != SG.end())
-            return;
-
-        int mex = 0;
-        for (int i = 1; i < 30; i++) {
-            if (cur < (1 << i)) 
-                continue;
-
-            int nxt = (cur >> i) | (cur & ((1 << i) - 1));
-            
-            calc(nxt, calc);
-            
-            mex |= 1 << SG[nxt];
-        }
-
-        while (mex & (1 << SG[cur]))
-            SG[cur]++;
-
-        return;
+    auto A = [&](lng n) -> long double {
+        long double P = (long double)(T) - m * n;
+        return -P * P / (4.0L * (long double)(n) * tan(pi / n));
     };
 
-    int ans = 0;
-    for (auto &[p, m] : M) { 
-        SG[1] = 0;
-    
-        calc(m, calc);
-    
-        ans ^= SG[m];
-    }
+    lng res = ternSearch(3, T / m, A);
 
-    cout << (ans > 0 ? "Mojtaba" : "Arpa") << endl;
+    cout << setprecision(32) << -A(res) << endl;
 
     return;
-}   
+}
 
 int main() {
-    ios_base::sync_with_stdio(false);
+    ios::sync_with_stdio(false);
     cin.tie(NULL);
 
     int t = 1;
-    // cin >> t;
-    while (t--) {
-        solve();
+    cin >> t;
+    for (int i = 0; i < t; i++) {
+        solve(i);
+        // break;
     }
 
     return 0;

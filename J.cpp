@@ -166,44 +166,89 @@ namespace Debug {
 void solve(int t) {
     // trace(to_string(t));
 
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
+    int n;
+    cin >> n;
+    vector<set<int>> adjl(26);
+    for (int i = 0; i < n; i++) {
+        char c1, ord, c2;
+        cin >> c1 >> ord >> c2;
 
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
-
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
+        if (ord == '>') {
+            adjl[c1 - 'a'].insert(c2 - 'a');
+        } else if (ord == '<') {
+            adjl[c2 - 'a'].insert(c1 - 'a');
         }
     }
-
-    for (auto x : grid) {
-        cout << x << endl;
+    string s;
+    cin >> s;
+    vector<int> frq(26);
+    for (char c : s) {
+        frq[c - 'a']++;
     }
+
+    
+    int cyc_bgn, cyc_end;
+    vector<char> clr;
+    vector<int> par;
+
+    auto dfs = [&](auto &&dfs, int u) -> bool {
+        clr[u] = 1;
+        for (int v : adjl[u]) {
+            if (clr[v] == 0) {
+                par[v] = u;
+                if (dfs(dfs, v)) {
+                    return true;
+                }
+            } else if (clr[v] == 1) {
+                cyc_bgn = v;
+                cyc_end = u;
+                return true;
+            }
+        }
+        clr[u] = 2;
+        return false;
+    };
+
+    auto hasCycle = [&]() -> bool {
+        cyc_bgn = -1;
+        clr.assign(26, 0);
+        par.assign(26, -1);
+        for (int u = 0; u < n; u++) {
+            if (clr[u] == 0 && dfs(dfs, u)) {
+                break;
+            }
+        }
+
+        if (cyc_bgn == -1) {
+            return false;    
+        }   
+        return true;
+    };
+
+    if (hasCycle()) {
+        cout << "IMPOSSIBLE" << endl;
+        return;
+    }
+
+    string ans;
+    vector<bool> vst(26);
+    for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 26; j++) {
+            if (adjl[j].size() > 0 || vst[j]) {
+                continue;
+            }
+            vst[j] = true;
+
+            cout << string(frq[j], 'a' + j);
+
+            for (int k = 0; k < 26; k++) {
+                if (adjl[k].find(j) != adjl[k].end()) {
+                    adjl[k].erase(j);
+                }
+            }
+        }
+    }
+    cout << endl;
 
     return;
 }

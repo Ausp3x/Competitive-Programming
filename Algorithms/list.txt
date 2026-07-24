@@ -1,0 +1,105 @@
+That $O(k \log_k n)$ recursive Josephus implementation you linked is a beauty. It perfectly bypasses the standard $O(n)$ DP by jumping states mathematically.
+
+To be completely candid, a literally "complete" list of these problems does not exist. The very nature of AtCoder and Codeforces Grandmaster problems is to invent *new* mathematical reductions that resist standard templating. However, there is a definitive canon of classic "simulation-to-math" reductions where a seemingly complex algorithmic problem collapses into a rigid formula or specialized recurrence.
+
+Here is the GM-level arsenal of black-boxable theorems and algorithms.
+
+### **1. Sequence & Recurrence Black Boxes**
+
+* **Berlekamp-Massey Algorithm:** The ultimate CP cheat code. If a problem asks for the $N$-th term of a seemingly impossible sequence, you brute-force the first few dozen terms and feed them to this algorithm. It finds the shortest linear recurrence describing the sequence in $O(s^2)$ time and evaluates the $N$-th term in $O(d \log d \log N)$ time.
+* **Euler's Pentagonal Number Theorem:** Used for integer partitions. Instead of the standard $O(n^2)$ knapsack DP to find how many ways to sum to $n$, this theorem reduces it to a strict recurrence using pentagonal numbers, dropping the complexity to $O(n \sqrt{n})$.
+* **De Bruijn Sequences:** If a problem requires generating a minimal string or array containing every possible sequence of length $k$ exactly once, it collapses entirely into an Eulerian path finding algorithm on a De Bruijn graph.
+
+### **2. Game Theory (Nim Variations)**
+
+* **Wythoff's Game:** A two-pile game where you can take from one pile, or take *equally* from both. Instead of a massive Sprague-Grundy DP, the losing states are perfectly defined by Beatty sequences using the Golden Ratio $\phi$. The $k$-th losing position is exactly $(\lfloor k\phi \rfloor, \lfloor k\phi^2 \rfloor)$.
+* **Moore's Nim-$k$:** A variant of Nim where you can remove stones from up to $k$ piles at once. It reduces to representing the pile sizes in binary and checking if the sum of the bits in every column is divisible by $k+1$.
+* **Fibonacci Nim:** Players take turns removing coins, but cannot take more than twice what the previous player took. The winning strategy perfectly black-boxes into Zeckendorf's theorem (representing the starting number as a sum of non-consecutive Fibonacci numbers).
+
+### **3. Combinatorial Counting**
+
+* **Burnside’s Lemma / Pólya Enumeration Theorem:** If a problem asks you to count the number of unique colorings/configurations of an object (like a necklace, grid, or cube) *ignoring rotations and reflections*, this theorem black-boxes the counting using group theory symmetries.
+* **Kirchhoff's Matrix Tree Theorem:** If you need to count the exact number of unique spanning trees in a general undirected graph, you construct the graph's Laplacian matrix and calculate its determinant.
+* **Lucas' Theorem:** Used for massive combinatorics. It calculates $\binom{n}{k} \pmod p$ in $O(p \log_p n)$ time for extremely large $N$ and $K$, provided the modulo $p$ is a small prime.
+
+### **4. Number Theory & Geometry**
+
+* **Stern-Brocot Tree / Farey Sequences:** If a problem asks you to find a rational number with the smallest denominator strictly between two real bounds, or requires binary searching over fractions, traversing this specialized tree guarantees the optimal fraction without floating-point precision errors.
+* **Pell's Equation ($x^2 - ny^2 = 1$):** If a problem reduces to finding integer coordinates on certain hyperbolas, you only need to find the fundamental solution. All infinite subsequent solutions can be generated directly using a fixed recurrence relation derived from continued fractions.
+* **Pick's Theorem:** If you need the exact area of any polygon whose vertices lie exactly on an integer grid, you don't need complex geometry. The area is simply $I + \frac{B}{2} - 1$, where $I$ is interior points and $B$ is boundary points.
+
+I can provide the highly optimized C++ templates for any of these. Which of these categories would you like to build into your team notebook next?
+
+
+
+You are completely right, and I apologize for leaving the very examples you mentioned out of the breakdown! Both the **Josephus Problem** and the **Towers of Hanoi** are quintessential examples of algorithmic simulations collapsing into pure mathematical state-queries.
+
+Here is "Volume 2" of the Grandmaster-level black boxes, starting with the exact breakdowns of your two examples, followed by several more advanced theorems that frequently appear in high-level AtCoder and Codeforces problemsets.
+
+### **1. The Foundational Classics**
+
+* **The Josephus Problem (State Jumping):** The standard DP $J(n, k) = (J(n-1, k) + k) \pmod n$ runs in $O(n)$ time. However, when $K$ is small and $N$ is massive (e.g., $N = 10^{18}$), simulating each step is impossible. The black-box reduction you linked uses the fact that if $K$ people are skipped, we can kill off multiple people in a single mathematical step. This allows us to "fast-forward" the state, reducing the time complexity to $O(K \log N)$.
+* **Towers of Hanoi (Bitwise State Querying):** Simulating Hanoi takes $2^n - 1$ steps. But if a problem asks, *"What disk is moved on the $k$-th step?"* or *"What peg is disk $i$ on after $k$ steps?"*, you do not simulate it.
+* The disk moved on step $k$ is exactly the number of trailing zeros in the binary representation of $k$.
+* The precise location of any disk after $k$ moves can be calculated in $O(1)$ purely by looking at the ternary/binary representation of the move number.
+* **Frame-Stewart Algorithm:** If the problem introduces a 4th peg (or $M$ pegs), it black-boxes into a DP that minimizes the moves over partitions of disks, dropping the moves from $O(2^N)$ to $O(2^{\sqrt{2N}})$.
+
+
+
+### **2. Advanced Graph & Grid Combinatorics**
+
+* **Lindström–Gessel–Viennot Lemma (LGV):** A massive favorite in AtCoder. If a problem asks you to find the number of ways to route $K$ non-intersecting paths on a grid or DAG from $K$ starting points to $K$ endpoints, standard DP will fail. LGV reduces this entirely to calculating the determinant of a $K \times K$ matrix, where the entry $M_{i,j}$ is simply the number of unrestricted paths from start $i$ to end $j$.
+* **The BEST Theorem:** If you need to count the exact number of unique Eulerian circuits in a *directed* graph. Standard backtracking is $O(E!)$. The BEST theorem reduces it to computing the determinant of a modified Laplacian matrix (like Matrix Tree) multiplied by the product of $(deg(v) - 1)!$ for all vertices.
+* **Prüfer Sequences & Cayley’s Formula:** If a problem asks you to count trees. Cayley's formula states there are exactly $n^{n-2}$ labeled trees on $n$ vertices. If the problem specifies the exact *degree* each vertex must have, Prüfer sequences reduce the tree-building problem into a simple multinomial coefficient: $\frac{(n-2)!}{\prod (deg(v_i) - 1)!}$.
+
+### **3. Grid Paths & Geometric Bounds**
+
+* **André's Reflection Principle (Catalan Extensions):** Counting the number of paths from $(0,0)$ to $(n,m)$ that *never cross* a dangerous line (like $y = x$) is natively a 2D DP. The reflection principle black-boxes this in $O(1)$ math: it is the total unrestricted paths minus the paths to a mathematically "reflected" endpoint across the dangerous line. This is the exact theorem used to derive Catalan Numbers.
+* **The Frobenius Coin Problem (Chicken McNugget Theorem):** Given coins of coprime denominations $A$ and $B$, what is the largest amount you *cannot* make? DP/BFS is too slow for bounds like $10^9$. The exact answer is simply $A \times B - A - B$. Furthermore, the exact number of impossible amounts is always $\frac{(A-1)(B-1)}{2}$.
+
+### **4. Algebraic Collapses**
+
+* **Vandermonde's Convolution:** If a problem forces you to compute a sum of multiplying combinations like $\sum_{k=0}^r \binom{m}{k}\binom{n}{r-k}$ in $O(1)$ time, this identity proves it perfectly collapses into a single combination: $\binom{m+n}{r}$. It essentially says "choosing $k$ items from group A and $r-k$ items from group B is the same as choosing $r$ items from the combined groups".
+* **Legendre's Formula:** If you need to find the number of trailing zeros of $N!$ in a specific base, or the highest power of a prime $p$ that divides $N!$, you don't calculate the factorial. The exact power is $\sum_{k=1}^{\infty} \lfloor \frac{n}{p^k} \rfloor$, running in lightning-fast $O(\log_p N)$ time.
+
+### **5. Advanced Game Theory**
+
+* **Hackenbush & Surreal Numbers:**
+A step above Nim. If a game involves players cutting edges off a colored graph (where some edges are shared, some belong only to Left, some only to Right), the game states don't map to simple integer XORs. They map to **Surreal Numbers** (dyadic fractions like $1/2, 3/4$). The game is perfectly solved by evaluating the graph recursively into fractions and summing them up.
+
+
+
+This is the definitive **Volume 3**.
+
+By compiling this final list, we are effectively hitting the ceiling of the standard ICPC World Finals and Codeforces Grandmaster "blackbox" curriculum. While mathematics itself is infinite, the subset of theorems that strictly collapse a complex algorithmic simulation or DP into a fixed, copy-pasteable formula is finite. Beyond this list, high-level CP stops being about *knowing a hidden theorem* and becomes about *combining known ones in novel ways*.
+
+Here is the final arsenal of classic reductions to complete your notebook.
+
+### **1. Summation & Polynomial Collapses (The Algebra Blackboxes)**
+
+* **The Like-Euclidean Algorithm (`floor_sum`):** A staple in the AtCoder Library. If a problem asks you to compute $\sum_{i=0}^{N-1} \lfloor \frac{A \cdot i + B}{M} \rfloor$ (e.g., counting lattice points under a line, or intersecting grid boundaries). A naive loop is $O(N)$. This algorithm black-boxes it recursively like GCD, dropping the complexity to a blistering $O(\log M)$.
+* **Lagrange Interpolation on Contiguous Points:** If you realize a DP state or a sequence is actually a polynomial of degree $K$, you *do not* need to calculate the $N$-th term using matrix exponentiation or full polynomial multiplication. You only need to calculate the first $K+1$ terms (e.g., $x = 0, 1, \dots, K$). The theorem allows you to compute the $N$-th term in exactly $O(K)$ time using prefix/suffix products of the numerator and factorials for the denominator.
+* **Faulhaber's Formula & Bernoulli Numbers:** If you need to calculate the sum of $K$-th powers: $\sum_{i=1}^N i^K$. A loop is $O(N)$. Matrix exponentiation is $O(K^3 \log N)$. Faulhaber reduces this to $O(K \log K)$ by precomputing Bernoulli numbers, turning the sum into a direct polynomial evaluation.
+
+### **2. Graph Degree & Poset Geometry (Structure Collapses)**
+
+* **Dilworth's Theorem / Mirsky's Theorem:** If a problem asks you to find the minimum number of paths (or chains) required to cover every node in a Directed Acyclic Graph (DAG), standard DP will fail. Dilworth's theorem black-boxes this: the minimum number of paths is *exactly equal* to the size of the maximum anti-chain (the largest set of elements where no two elements can reach each other). You reduce a path-covering problem into a Maximum Bipartite Matching problem.
+* **Erdős-Gallai Theorem:** A problem gives you an array of $N$ integers and asks, *"Can a graph exist where these are the exact degrees of the vertices?"* Simulating this by greedily connecting nodes is $O(N^2 \log N)$ (Havel-Hakimi algorithm). Erdős-Gallai collapses this into a strict mathematical inequality check that runs in $O(N \log N)$ or even $O(N)$ using prefix sums.
+* **Gale-Ryser Theorem:** The bipartite equivalent of Erdős-Gallai. If a problem asks if a grid/matrix can exist with specific row sums and column sums (or a bipartite graph with specific degrees), Gale-Ryser reduces the entire simulation to sorting one sequence, computing its prefix sums, and comparing it against the conjugate of the other sequence.
+
+### **3. Advanced Modulo Combinatorics**
+
+* **Kummer's Theorem:** A step sideways from Legendre's formula. If a problem asks for the highest power of a prime $p$ that divides a specific binomial coefficient $\binom{N}{K}$, you don't calculate factorials. Kummer's theorem states the answer is exactly the **number of carries** when you add $K$ and $N-K$ together in base $p$. It runs in $O(\log_p N)$ time.
+* **Lucas' Theorem Variations (Prime Power Moduli):** Standard Lucas handles $\binom{N}{K} \pmod p$. If the problem asks for $\binom{N}{K} \pmod{p^a}$ (a prime power), it collapses into **Granville's Theorem**, which generalizes Lucas by removing prime factors and computing the remaining parts using $O(p^a)$ precomputations.
+
+### **4. Grid & Geometry Reductions**
+
+* **Euler's Formula for Planar Graphs ($V - E + F = 1 + C$):** A classic CP trap. A problem gives you $N$ intersecting lines, circles, or polygons and asks: *"How many distinct regions is the plane divided into?"* Many try to build a graph and run a flood-fill/BFS (which MLE/TLEs). By using Euler's formula, you only need to calculate the number of intersection points ($V$) and the number of line segments ($E$). The number of regions ($F$) is instantly calculated as $E - V + 1 + C$ (where $C$ is the number of connected components).
+* **Manhattan Minimum Spanning Tree:** Given $N$ points on a grid, find the MST using Manhattan distance. A dense graph has $O(N^2)$ edges, making standard Kruskal's $O(N^2 \log N)$, which TLEs for $N = 10^5$. This black-box reduces the graph by proving that for any point, you only ever need to connect it to its *closest neighbor in each of the 8 directional octants*. This drops the edge count from $N^2$ to exactly $8N$, letting Kruskal's finish in $O(N \log N)$.
+* **Zeller's Congruence:** The ultimate calendar skip. If a problem asks you to simulate days to find out what day of the week a historical or future date falls on, Zeller's is an $O(1)$ formula that evaluates day, month, and year integers directly into a $0-6$ index (Saturday - Friday), completely bypassing leap-year while-loops.
+
+### **The Verdict**
+
+If your team notebook contains templates for **Sieves, Fast Convolutions (Möbius/Divisor), Extended CRT, Diophantine, LGV, Berlekamp-Massey, Floor Sum, and Contiguous Lagrange Interpolation** — you have mathematically cornered the ICPC syllabus.
+
+Any problem not covered by Volumes 1, 2, or 3 will invariably rely on standard Data Structures (Segment Trees, Link-Cut Trees), String Algorithms (Aho-Corasick, Suffix Automaton), or Network Flow (Dinic's, Min-Cost Max-Flow) rather than mathematical blackboxes.

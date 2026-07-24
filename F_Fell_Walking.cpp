@@ -166,45 +166,14 @@ namespace Debug {
 void solve(int t) {
     // trace(to_string(t));
 
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
-
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
-
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
-        }
+    int n, m;
+    cin >> n >> m;
+    vector<int> H(n);
+    for (int &h : H) {
+        cin >> h;
     }
-
-    for (auto x : grid) {
-        cout << x << endl;
-    }
-
+    
+     
     return;
 }
 

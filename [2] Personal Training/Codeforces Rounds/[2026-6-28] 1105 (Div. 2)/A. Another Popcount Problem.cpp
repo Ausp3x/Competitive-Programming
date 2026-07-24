@@ -5,10 +5,10 @@
 using namespace std;
 using namespace __gnu_pbds;
 
-#define fi    first
-#define se    second
-#define pb    push_back
-using uint = uint32_t;
+#define fi     first
+#define se     second
+#define pb     push_back
+using uint = unsigned int;
 using lng = int64_t;    using ulng = uint64_t;
 using lll = __int128_t; using ulll = __uint128_t;
 template<typename T> 
@@ -26,9 +26,9 @@ constexpr inline bool chmin(T &a, const T &b) { return a > b ? a = b, 1 : 0; }
 namespace Debug {
     using std::to_string;
 
-    inline string to_string(bool x) { return x ? "true" : "false"; }
-    inline string to_string(char x) { return string({'\'', x, '\''}); }
-    inline string to_string(lll x) {
+    string to_string(bool x) { return x ? "true" : "false"; }
+    string to_string(char x) { return string({'\'', x, '\''}); }
+    string to_string(lll x) {
         if (x == 0) { return "0"; }
         string s; bool is_neg = x < 0; 
         ulll ux = is_neg ? -ulll(x) : ulll(x);
@@ -36,83 +36,77 @@ namespace Debug {
         if (is_neg) { s += '-'; }
         std::reverse(s.begin(), s.end());
         return s;}
-    inline string to_string(ulll x) {
+    string to_string(ulll x) {
         if (x == 0) { return "0"; }
         string s;
         while (x > 0) { s += char('0' + x % 10); x /= 10; }
         std::reverse(s.begin(), s.end());
         return s;}
-    inline string to_string(std::string_view x) {
+    string to_string(std::string_view x) {
         string res; res.reserve(x.size() + 2);
         res += '"'; res += x; res += '"';
         return res;}
-    inline string to_string(const char *x) { return x ? to_string(std::string_view(x)) : ""; }
-    inline string to_string(char *x) { return to_string(static_cast<const char*>(x)); }
-    inline string to_string(const string &x) { return to_string(std::string_view(x)); }
+    string to_string(const char *x) { return to_string(std::string_view(x)); }
+    string to_string(const string &x) { return to_string(std::string_view(x)); }
     template<size_t N> 
-    inline string to_string(const bitset<N> &x) { return x.to_string(); }
+    string to_string(const bitset<N> &x) { return x.to_string(); }
     
     template<typename T>
     requires std::is_aggregate_v<T> && (!std::ranges::range<T>) 
           && (!requires (ostream &os, const T &x) { os << x; })
-    inline string to_string(const T &x);
+    string to_string(const T &x);
     
     template<typename T>
     requires requires { std::tuple_size<T>::value; } && (!std::ranges::range<T>)
-    inline string to_string(const T &x);
+    string to_string(const T &x);
     template<std::ranges::range T> 
     requires (!std::is_convertible_v<T, std::string_view>)
-    inline string to_string(const T &x);
+    string to_string(const T &x);
     template<typename T, typename C>
-    inline string to_string(const queue<T, C> &x);
+    string to_string(const queue<T, C> &x);
     template<typename T, typename C>
-    inline string to_string(const stack<T, C> &x);
+    string to_string(const stack<T, C> &x);
     template<typename T, typename C, typename Comp>
-    inline string to_string(const priority_queue<T, C, Comp> &x);
+    string to_string(const priority_queue<T, C, Comp> &x);
     
     template<typename T>
     requires (!std::ranges::range<T>) && requires (ostream &os, const T &x) { os << x; }
-    inline string to_string(const T &x) { std::stringstream ss; ss << x; return ss.str(); }
+    string to_string(const T &x) { std::stringstream ss; ss << x; return ss.str(); }
     
     // optional
     struct Any { template<typename T> operator T() const; };
-    template<typename T, size_t N>
-    constexpr bool aggSizGeq = []<size_t ...I>(std::index_sequence<I...>) {
-        return requires { T{(void(I), Any{})...}; };}(std::make_index_sequence<N>{});
-    template<typename T, size_t N>
-    constexpr bool aggSizExact = aggSizGeq<T, N> && !aggSizGeq<T, N + 1>;
     template<typename T>
     requires std::is_aggregate_v<T> && (!std::ranges::range<T>) 
           && (!requires (ostream &os, const T &x) { os << x; })
-    inline string to_string(const T &x) {
-        if constexpr (aggSizExact<T, 8>) {
+    string to_string(const T &x) {
+        if constexpr (requires { T{Any{}, Any{}, Any{}, Any{}, Any{}, Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c, d, e, f, g, h] = x; return to_string(std::tie(a, b, c, d, e, f, g, h));} 
-        else if constexpr (aggSizExact<T, 7>) {
+        else if constexpr (requires { T{Any{}, Any{}, Any{}, Any{}, Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c, d, e, f, g] = x; return to_string(std::tie(a, b, c, d, e, f, g));} 
-        else if constexpr (aggSizExact<T, 6>) {
+        else if constexpr (requires { T{Any{}, Any{}, Any{}, Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c, d, e, f] = x; return to_string(std::tie(a, b, c, d, e, f));} 
-        else if constexpr (aggSizExact<T, 5>) {
+        else if constexpr (requires { T{Any{}, Any{}, Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c, d, e] = x; return to_string(std::tie(a, b, c, d, e));} 
-        else if constexpr (aggSizExact<T, 4>) {
+        else if constexpr (requires { T{Any{}, Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c, d] = x; return to_string(std::tie(a, b, c, d));} 
-        else if constexpr (aggSizExact<T, 3>) {
+        else if constexpr (requires { T{Any{}, Any{}, Any{}}; }) {
             auto &[a, b, c] = x; return to_string(std::tie(a, b, c));} 
-        else if constexpr (aggSizExact<T, 2>) {
+        else if constexpr (requires { T{Any{}, Any{}}; }) {
             auto &[a, b] = x; return to_string(std::tie(a, b));} 
-        else if constexpr (aggSizExact<T, 1>) {
+        else if constexpr (requires { T{Any{}}; }) {
             auto &[a] = x; return to_string(std::tie(a));} 
         else { return "{}"; }}
     
     template<typename T>
     requires requires { std::tuple_size<T>::value; } && (!std::ranges::range<T>)
-    inline string to_string(const T &x) {
+    string to_string(const T &x) {
         string res = "(";
         std::apply([&](const auto &...args) { 
             int i = 0; ((res += (i++ ? ", " : ""), res += to_string(args)), ...);}, x);
         return res + ")";}
     template<std::ranges::range T> 
     requires (!std::is_convertible_v<T, std::string_view>)
-    inline string to_string(const T &x) {
+    string to_string(const T &x) {
         int i = 0; string res = "{";
         for (auto &&y : x) {
             if (i++ > 0) { res += ", "; } 
@@ -120,23 +114,23 @@ namespace Debug {
         res += "}";
         return res;}
     template<typename T, typename C>
-    inline string to_string(const queue<T, C> &x) {
+    string to_string(const queue<T, C> &x) {
         struct Accessor : queue<T, C> { 
             static const C &get(const queue<T, C> &q) { return q.*&Accessor::c; }};
         return to_string(Accessor::get(x));}
     template<typename T, typename C>
-    inline string to_string(const stack<T, C> &x) {
+    string to_string(const stack<T, C> &x) {
         struct Accessor : stack<T, C> { 
             static const C &get(const stack<T, C> &q) { return q.*&Accessor::c; }};
         return to_string(Accessor::get(x));}
     template<typename T, typename C, typename Comp>
-    inline string to_string(const priority_queue<T, C, Comp> &x) {
+    string to_string(const priority_queue<T, C, Comp> &x) {
         struct Accessor : priority_queue<T, C, Comp> { 
             static const C &get(const priority_queue<T, C, Comp> &q) { return q.*&Accessor::c; }};
         return to_string(Accessor::get(x));}
 
-    inline int dep = 0;
-    inline std::string_view indent() {
+    int dep = 0;
+    std::string_view indent() {
         static constexpr auto spaces = []() { array<char, 128> v{}; v.fill(' '); return v; }();
         return std::string_view(spaces.data(), min<int>(2 * dep, spaces.size()));}
     template<std::ranges::range R, typename ...Args>
@@ -153,8 +147,7 @@ namespace Debug {
         ~Tracer() { dep--; cerr << indent() << "<< " << v << '\n'; }};
 }
 
-#define debug(...) cerr << Debug::indent() << "[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]", Debug::debugO(__VA_ARGS__)
-// #define debug(...) cerr << Debug::indent() << "\033[1;31m[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]:\033[0m", Debug::debugO(__VA_ARGS__)
+#define debug(...) cerr << Debug::indent() << "\033[1;31m[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]:\033[0m", Debug::debugO(__VA_ARGS__)
 #define TRACE_CNCAT(a, b) a##b
 #define TRACE_GUARD(a, b) TRACE_CNCAT(a, b)
 #define trace(x) Debug::Tracer TRACE_GUARD(_traceGuard, __LINE__)(x)
@@ -166,44 +159,18 @@ namespace Debug {
 void solve(int t) {
     // trace(to_string(t));
 
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
-
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
-
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
-        }
+    lng n, k;
+    cin >> n >> k;
+    
+    lng h = log2(n);
+    lng ans = 0;
+    for (int i = 1; i <= n; i <<= 1) {
+        lng cur = min(k, n / i);
+        ans += cur;
+        n -= cur * i;
     }
 
-    for (auto x : grid) {
-        cout << x << endl;
-    }
+    cout << ans << endl;
 
     return;
 }
@@ -214,7 +181,7 @@ int main() {
     cin.tie(NULL);
 
     int t = 1;
-    // cin >> t;
+    cin >> t;
     for (int i = 0; i < t; i++) {
         solve(i);
     }

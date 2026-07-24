@@ -163,51 +163,116 @@ namespace Debug {
 #define trace(x) void(0)
 #endif
 
+struct FloydWarshall {
+    int n;
+    vector<vector<lng>> dis;
+    
+    FloydWarshall(int n, vector<vector<lng>> dis) : n(n), dis(dis) {
+        assert(dis.size() == n + 1);
+        for (int i = 0; i <= n; i++) {
+            assert(dis[i].size() == n + 1);
+        }
+    }
+    
+    void runFloydWarshall() {
+        for (int k = 1; k <= n; k++) {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    if (dis[i][k] < INF64 && dis[k][j] < INF64) {
+                        dis[i][j] = max(min(dis[i][j], dis[i][k] + dis[k][j]), -INF64);
+                    }
+                }
+            }
+        }
+    
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = 1; k <= n; k++) {
+                    if (dis[i][k] < INF64 && dis[k][k] < 0 && dis[k][j] < INF64) {
+                        dis[i][j] = -INF64;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+};
+
 void solve(int t) {
     // trace(to_string(t));
 
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
+    int r;
+    cin >> r;
+    vector<int> A(r + 1);
+    for (int i = 1; i <= r; i++) {
+        cin >> A[i];
+    }
+    int p;
+    cin >> p;
+    vector<int> C(p + 1);
+    for (int i = 1; i <= p; i++) {
+        cin >> C[i];
+    }
+    int m;
+    cin >> m;
+    vector adjm(p + 1, vector<lng>(p + 1, INF64));
+    while (m--) {
+        int a, b, d;
+        cin >> a >> b >> d;
 
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
-
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
-        }
+        chmin<lng>(adjm[a][b], d);
+        chmin<lng>(adjm[b][a], d);
+    }
+    for (int i = 1; i <= p; i++) {
+        adjm[i][i] = 0;
     }
 
-    for (auto x : grid) {
-        cout << x << endl;
+    FloydWarshall fw(p, adjm);
+    fw.runFloydWarshall();
+
+    debug(fw.dis);
+
+    int ans = 0;
+    vector dp(r + 1, vector<lng>(p + 1, INF64));
+    for (int j = 1; j <= p; j++) {
+        if (fw.dis[1][j] + A[1] <= C[j]) {
+            dp[1][j] = fw.dis[1][j] + A[1];
+            ans = 1;
+        }
     }
+    for (int i = 2; i <= r; i++) {
+        for (int j = 1; j <= p; j++) {
+            if (dp[i - 1][j] == INF64) {
+                continue;
+            }
+
+            for (int k = 1; k <= p; k++) {
+                if (j == k || fw.dis[j][k] == INF64) {
+                    continue;
+                }
+                if (dp[i - 1][j] + fw.dis[j][k] + A[i] <= C[k]) {
+                    chmin(dp[i][k], dp[i - 1][j] + fw.dis[j][k] + A[i]);
+                }
+            }
+        }
+
+        bool ok = false;
+        for (int j = 1; j <= p; j++) {
+            ok |= dp[i][j] < INF64;
+        }
+        if (!ok) {
+            break;
+        }
+
+        ans = i;
+    }
+
+    debug(dp);
+    
+    cout << ans << endl;
 
     return;
 }
-
 
 int main() {
     ios::sync_with_stdio(false);

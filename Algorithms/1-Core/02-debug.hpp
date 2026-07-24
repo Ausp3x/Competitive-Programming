@@ -1,26 +1,5 @@
-// 知彼知己，百战不殆
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-using namespace std;
-using namespace __gnu_pbds;
-
-#define fi    first
-#define se    second
-#define pb    push_back
-using uint = uint32_t;
-using lng = int64_t;    using ulng = uint64_t;
-using lll = __int128_t; using ulll = __uint128_t;
-template<typename T> 
-using indexed_set = tree<T, null_type, std::less<T>, rb_tree_tag, tree_order_statistics_node_update>;
-
-constexpr int INF32 = 0x3f3f3f3f;
-constexpr lng INF64 = 0x3f3f3f3f3f3f3f3f;
-
-template<typename T> 
-constexpr inline bool chmax(T &a, const T &b) { return a < b ? a = b, 1 : 0; }
-template<typename T> 
-constexpr inline bool chmin(T &a, const T &b) { return a > b ? a = b, 1 : 0; }
+#pragma once
+#include "../1-Core/01-template.hpp"
 
 #ifdef LOCAL
 namespace Debug {
@@ -74,7 +53,7 @@ namespace Debug {
     requires (!std::ranges::range<T>) && requires (ostream &os, const T &x) { os << x; }
     inline string to_string(const T &x) { std::stringstream ss; ss << x; return ss.str(); }
     
-    // optional
+    // optional: flat aggregates with <= 8 structured-binding members
     struct Any { template<typename T> operator T() const; };
     template<typename T, size_t N>
     constexpr bool aggSizGeq = []<size_t ...I>(std::index_sequence<I...>) {
@@ -148,76 +127,22 @@ namespace Debug {
     template<typename ...Args>
     void debugO(const Args &...args) { ((cerr << ' ' << to_string(args)), ...); cerr << '\n'; }
     struct Tracer {
+        Tracer(const Tracer&) = delete;
+        Tracer(Tracer&&) = delete;
+        Tracer &operator=(const Tracer&) = delete;
+        Tracer &operator=(Tracer&&) = delete;
+
         string v; 
         Tracer(string x) : v(std::move(x)) { cerr << indent() << ">> " << v << '\n'; dep++; }
         ~Tracer() { dep--; cerr << indent() << "<< " << v << '\n'; }};
 }
 
-#define debug(...) cerr << Debug::indent() << "[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]", Debug::debugO(__VA_ARGS__)
-// #define debug(...) cerr << Debug::indent() << "\033[1;31m[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]:\033[0m", Debug::debugO(__VA_ARGS__)
+// #define debug(...) cerr << Debug::indent() << "[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]", Debug::debugO(__VA_ARGS__)
+#define debug(...) cerr << Debug::indent() << "\033[1;31m[L" << __LINE__ << "] [" << #__VA_ARGS__ << "]:\033[0m", Debug::debugO(__VA_ARGS__)
 #define TRACE_CNCAT(a, b) a##b
 #define TRACE_GUARD(a, b) TRACE_CNCAT(a, b)
-#define trace(x) Debug::Tracer TRACE_GUARD(_traceGuard, __LINE__)(x)
+#define trace(x) Debug::Tracer TRACE_GUARD(_traceGuard, __COUNTER__)(x)
 #else
 #define debug(...) void(0)
 #define trace(x) void(0)
 #endif
-
-void solve(int t) {
-    // trace(to_string(t));
-
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
-
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
-
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
-        }
-    }
-
-    for (auto x : grid) {
-        cout << x << endl;
-    }
-
-    return;
-}
-
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    int t = 1;
-    // cin >> t;
-    for (int i = 0; i < t; i++) {
-        solve(i);
-    }
-
-    return 0;
-}

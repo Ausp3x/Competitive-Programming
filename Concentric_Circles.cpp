@@ -166,44 +166,26 @@ namespace Debug {
 void solve(int t) {
     // trace(to_string(t));
 
-    vector<int> holes(26);
-    holes[1] = 2;
-    holes[0] = holes[3] = holes[14] = holes[15] = holes[16] = holes[17] = 1;
+    lng x1, y1, x2, y2;
+    lng x3, y3, x4, y4;
+    cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3 >> x4 >> y4;
 
-    string c1, c2;
-    cin >> c1 >> c2;
-    int l = c2.size();
+    lll v1x = x2 - x1;
+    lll v1y = y2 - y1; 
+    lll v2x = x4 - x3;
+    lll v2y = y4 - y3;
 
-    vector<string> grid(5);
-    for (int i = 0; i < c1.size(); i++) {
-        grid[0] += c2;
-        grid[4] += c2;
-        if (holes[c1[i] - 'A'] == 2) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += c2;
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 1) {
-            grid[1] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[2] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-            grid[3] += string(1, 'X') + string(l - 2, '.') + string(1, 'X');
-        } else if (holes[c1[i] - 'A'] == 0) {
-            grid[1] += string(1, 'X') + string(l - 1, '.');
-            grid[2] += string(1, 'X') + string(l - 1, '.');
-            grid[3] += string(1, 'X') + string(l - 1, '.');
-        }
-
-        if (i != c1.size() - 1) {
-            grid[0] += '.';
-            grid[1] += '.';
-            grid[2] += '.';
-            grid[3] += '.';
-            grid[4] += '.';
-        }
+    lll c = v1x * v2y - v1y * v2x;
+    if (c != 0) {
+        cout << "Yes" << endl;
+        return;
     }
 
-    for (auto x : grid) {
-        cout << x << endl;
-    }
+    lll dx = x3 + x4 - (x1 + x2);
+    lll dy = y3 + y4 - (y1 + y2);
+    lll d = dx * v1x + dy * v1y;
+
+    cout << (d == 0 ? "Yes" : "No") << endl;
 
     return;
 }
@@ -214,7 +196,7 @@ int main() {
     cin.tie(NULL);
 
     int t = 1;
-    // cin >> t;
+    cin >> t;
     for (int i = 0; i < t; i++) {
         solve(i);
     }
